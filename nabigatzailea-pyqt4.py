@@ -2,7 +2,7 @@ import sys, os
 from PyQt4 import uic, QtGui, QtCore, QtWebKit
 from urllib.parse import urlparse
 
-form_class, base_class = uic.loadUiType("nabigatzailea-0.5.ui")
+form_class, base_class = uic.loadUiType("nabigatzailea.ui")
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent = None):
