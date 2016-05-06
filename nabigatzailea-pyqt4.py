@@ -54,14 +54,18 @@ class Nabigatzailea(QtWebKit.QWebView):
 
         self.setPage(WebPage())
 
-    #eskuineko botoiarekin fitxa berrian ireki
+    #eskuineko botoiaren menua
     def contextMenuEvent(self, event):
-        menu = self.page().createStandardContextMenu()
-        menu.exec_(event.globalPos())
         pos = event.pos()
         element = self.page().mainFrame().hitTestContent(pos)
         url = str(element.linkUrl().toString())
-        #print(url)
+        menu = self.page().createStandardContextMenu()
+        action = menu.exec_(event.globalPos())
+        if action.text() == "Open in New Window":
+            self.fitxaBerrianIreki(url)
+
+    #eskuineko botoiarekin fitxa berrian ireki
+    def fitxaBerrianIreki(self, url):
         contents = QtGui.QWidget(self.window().ui.tabWidget)
         layout = QtGui.QVBoxLayout(contents)
         layout.setContentsMargins(0,0,0,0)
