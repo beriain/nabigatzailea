@@ -18,7 +18,8 @@ class MainWindow(QtGui.QMainWindow):
         contents = QtGui.QWidget(self.ui.tabWidget)
         layout = QtGui.QVBoxLayout(contents)
         layout.setContentsMargins(0,0,0,0)
-        web = Nabigatzailea()
+        #nabigatzaile berri bat sortzerakoan, fitxa berri bat den zehaztu
+        web = Nabigatzailea(False)
         layout.addWidget(web)
         self.ui.tabWidget.addTab(contents, "-")
         self.ui.tabWidget.tabBar().tabButton(0, QtGui.QTabBar.RightSide).resize(0,0)
@@ -26,39 +27,48 @@ class MainWindow(QtGui.QMainWindow):
 
         #seinaleak funtzioetara lotu
         self.ui.lineEdit.returnPressed.connect(lambda: self.kargatu(web))
-        web.urlChanged.connect(self.urlEguneratu)
-        web.loadProgress.connect(self.kargatzen)
         self.ui.tabWidget.tabCloseRequested.connect(self.fitxaItxi)
         self.ui.tabWidget.currentChanged.connect(self.fitxaAldatuta)
 
     def kargatu(self, web):
         url = self.ui.lineEdit.text()
-        if not url.startswith("http://") and not url.startswith("https://"):
+        if not url.startswith("http://") and not url.startswith("https://") and not url.startswith("file:///"):
             url = "http://" + url
-        web.load(QtCore.QUrl(url))
-
-    def urlEguneratu(self, url):
-        self.ui.lineEdit.setText(url.toString())
-        o = urlparse(url.toString())
-        self.ui.tabWidget.setTabText(0, o.netloc)
-        #print(self.ui.webView.title()) hutsik agertzen da
+        self.ui.tabWidget.currentWidget().findChildren(QtWebKit.QWebView)[0].load(QtCore.QUrl(url))
+        o = urlparse(url)
+        self.ui.tabWidget.setTabText(self.window().ui.tabWidget.currentIndex(), o.netloc)
 
     def fitxaAldatuta(self):
-        widgets = self.ui.tabWidget.currentWidget().findChildren(QtWebKit.QWebView)
-        self.ui.lineEdit.setText(widgets[0].url().toString())
-
-    def kargatzen(self, p):
-	    self.ui.progressBar.setValue(p)
+        if self.ui.tabWidget.currentIndex() != 0:
+            widgets = self.ui.tabWidget.currentWidget().findChildren(QtWebKit.QWebView)
+            if not widgets[0].url().toString().startswith("http://") and not widgets[0].url().toString().startswith("https://"):
+                self.ui.lineEdit.setText("http://")
+            else:
+                self.ui.lineEdit.setText(widgets[0].url().toString())
+        else:
+            contents = QtGui.QWidget(self.window().ui.tabWidget)
+            layout = QtGui.QVBoxLayout(contents)
+            layout.setContentsMargins(0,0,0,0)
+            #nabigatzaile berri bat sortzerakoan, fitxa berri bat den zehaztu
+            web = Nabigatzailea(True)
+            layout.addWidget(web)
+            self.ui.tabWidget.addTab(contents, "-")
+            self.ui.tabWidget.setCurrentIndex(self.ui.tabWidget.count()-1)
 
     def fitxaItxi(self, f):
         if self.ui.tabWidget.count() > 2:
             self.ui.tabWidget.removeTab(f)
 
 class Nabigatzailea(QtWebKit.QWebView):
-    def __init__(self):
+    def __init__(self, fitxa):
         super(QtWebKit.QWebView, self).__init__()
+        #nabigatzaile berri bat sortzerakoan, fitxa berri bat den zehaztu
+        self.fitxaberria = fitxa
 
         self.setPage(WebPage())
+
+        self.urlChanged.connect(self.urlEguneratu)
+        self.loadProgress.connect(self.kargatzen)
 
     #eskuineko botoiaren menua
     def contextMenuEvent(self, event):
@@ -75,10 +85,25 @@ class Nabigatzailea(QtWebKit.QWebView):
         contents = QtGui.QWidget(self.window().ui.tabWidget)
         layout = QtGui.QVBoxLayout(contents)
         layout.setContentsMargins(0,0,0,0)
-        web = Nabigatzailea()
+        #nabigatzaile berri bat sortzerakoan, fitxa berri bat den zehaztu
+        web = Nabigatzailea(True)
         web.load(QtCore.QUrl(url))
         layout.addWidget(web)
         self.window().ui.tabWidget.addTab(contents, urlparse(url).netloc)
+
+    def urlEguneratu(self, url):
+        if not self.fitxaberria:
+            self.window().ui.lineEdit.setText(url.toString())
+            o = urlparse(url.toString())
+            self.window().ui.tabWidget.setTabText(self.window().ui.tabWidget.currentIndex(), o.netloc)
+        self.fitxaberria = False
+
+    def kargatzen(self, p):
+        #arrazoi ezezagun bategatik, p 10 baino txikiagoa denean self ez da
+        #lehio nagusia, nabigatzaile klasea baizik. p 10 baino gehiago denean
+        #konpontzen da. Aztertu behar da
+        if p > 10:
+            self.window().ui.progressBar.setValue(p)
 
 class WebPage(QtWebKit.QWebPage):
     def userAgentForUrl(self, url):
