@@ -21,6 +21,8 @@ class MainWindow(QtGui.QMainWindow):
         web = Nabigatzailea()
         layout.addWidget(web)
         self.ui.tabWidget.addTab(contents, "-")
+        self.ui.tabWidget.tabBar().tabButton(0, QtGui.QTabBar.RightSide).resize(0,0)
+        self.ui.tabWidget.setCurrentIndex(1)
 
         #seinaleak funtzioetara lotu
         self.ui.lineEdit.returnPressed.connect(lambda: self.kargatu(web))
@@ -49,7 +51,7 @@ class MainWindow(QtGui.QMainWindow):
 	    self.ui.progressBar.setValue(p)
 
     def fitxaItxi(self, f):
-        if self.ui.tabWidget.count() > 1:
+        if self.ui.tabWidget.count() > 2:
             self.ui.tabWidget.removeTab(f)
 
 class Nabigatzailea(QtWebKit.QWebView):
