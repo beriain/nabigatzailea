@@ -9,6 +9,10 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = form_class()
         self.ui.setupUi(self)
+        
+        #javascript gaitu/ezgaitu
+        #s = QtWebKit.QWebSettings.globalSettings()
+        #s.setAttribute(QtWebKit.QWebSettings.JavascriptEnabled, False)
 
         #webview huts bat gehitu fitxa batean
         contents = QtWidgets.QWidget(self.ui.tabWidget)
