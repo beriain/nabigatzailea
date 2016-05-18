@@ -1,5 +1,5 @@
 # nabigatzailea
-Interneterako nabigatzaile simple bat
+Interneterako nabigatzaile sinple bat
 
 Python 3 beharrezkoa da. PyQt4 eta PyQt5 bertsioak daude.
 

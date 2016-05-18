@@ -90,7 +90,7 @@ class Nabigatzailea(QtWebKit.QWebView):
                         urllib.request.urlretrieve(url, p)
             if action.text() == "Save Image":
                 f, ext = os.path.splitext(image)
-                p = QtGui.QFileDialog.getSaveFileName(self, "Fitxategia gorde",
+                p = QtGui.QFileDialog.getSaveFileName(self, "Irudia gorde",
                     ntpath.basename(image), "(*" + ext +")")
                 if p != "":
                     urllib.request.urlretrieve(image, p)
