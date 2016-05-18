@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, urllib.request, ntpath
 from PyQt4 import uic, QtGui, QtCore, QtWebKit
 from urllib.parse import urlparse
 
@@ -74,11 +74,28 @@ class Nabigatzailea(QtWebKit.QWebView):
     def contextMenuEvent(self, event):
         pos = event.pos()
         element = self.page().mainFrame().hitTestContent(pos)
-        url = str(element.linkUrl().toString())
+        url = element.linkUrl().toString()
+        image = element.imageUrl().toString()
         menu = self.page().createStandardContextMenu()
         action = menu.exec_(event.globalPos())
-        if action.text() == "Open in New Window":
-            self.fitxaBerrianIreki(url)
+        try:
+            if action.text() == "Open in New Window":
+                self.fitxaBerrianIreki(url)
+            if action.text() == "Save Link...":
+                f, ext = os.path.splitext(url)
+                if ext != "":
+                    p = QtGui.QFileDialog.getSaveFileName(self, "Fitxategia gorde",
+                        ntpath.basename(url), "(*" + ext +")")
+                    if p != "":
+                        urllib.request.urlretrieve(url, p)
+            if action.text() == "Save Image":
+                f, ext = os.path.splitext(image)
+                p = QtGui.QFileDialog.getSaveFileName(self, "Fitxategia gorde",
+                    ntpath.basename(image), "(*" + ext +")")
+                if p != "":
+                    urllib.request.urlretrieve(image, p)
+        except AttributeError:
+            None
 
     #eskuineko botoiarekin fitxa berrian ireki
     def fitxaBerrianIreki(self, url):
