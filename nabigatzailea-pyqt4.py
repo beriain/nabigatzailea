@@ -10,9 +10,11 @@ class MainWindow(QtGui.QMainWindow):
         self.ui = form_class()
         self.ui.setupUi(self)
         
-        #javascript gaitu/ezgaitu
+        #segurtasun ezarpenak gaitu/ezgaitu
         #s = QtWebKit.QWebSettings.globalSettings()
         #s.setAttribute(QtWebKit.QWebSettings.JavascriptEnabled, False)
+        #s.setAttribute(QtWebKit.QWebSettings.PrivateBrowsingEnabled, True)
+        #s.setAttribute(QtWebKit.QWebSettings.XSSAuditingEnabled, True)
 
         #webview huts bat gehitu fitxa batean
         contents = QtGui.QWidget(self.ui.tabWidget)
