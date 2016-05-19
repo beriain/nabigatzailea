@@ -13,6 +13,8 @@ class MainWindow(QtWidgets.QMainWindow):
         #javascript gaitu/ezgaitu
         s = QtWebKit.QWebSettings.globalSettings()
         s.setAttribute(QtWebKit.QWebSettings.JavascriptEnabled, False)
+        s.setAttribute(QtWebKit.QWebSettings.PrivateBrowsingEnabled, True)
+        s.setAttribute(QtWebKit.QWebSettings.XSSAuditingEnabled, True)
 
         #webview huts bat gehitu fitxa batean
         contents = QtWidgets.QWidget(self.ui.tabWidget)
@@ -132,6 +134,10 @@ class WebPage(QtWebKitWidgets.QWebPage):
         return "Mozilla/5.0 (Windows NT 6.1; rv:38.0) Gecko/20100101 Firefox/38.0"
         
 class MyNetworkAccessManager(QtNetwork.QNetworkAccessManager):
+    def __init__(self):
+        QtNetwork.QNetworkAccessManager.__init__(self)
+        self.setCookieJar(NetworkCookieJar())
+
     def createRequest(self, operation, request, data):
         al1 = QtCore.QByteArray()
         al1.append("Accept-Language")
@@ -144,6 +150,10 @@ class MyNetworkAccessManager(QtNetwork.QNetworkAccessManager):
         dnt2.append("1")
         request.setRawHeader(dnt1, dnt2)
         return QtNetwork.QNetworkAccessManager.createRequest(self, operation, request, data)
+        
+class NetworkCookieJar(QtNetwork.QNetworkCookieJar):
+    def setCookiesFromUrl():
+        None
 
 if __name__ == '__main__':
     proxy = QtNetwork.QNetworkProxy()
